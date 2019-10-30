@@ -1,0 +1,31 @@
+{
+  "name": "@yjtec/sku",
+  "version": "0.0.2",
+  "description": "js sku",
+  "main": "lib/index.js",
+  "files": [
+    "lib",
+    "es"
+  ],
+  "module": "dist/index.esm.js",
+  "authors": {
+    "name": "kidkang",
+    "email": "723616880@qq.com"
+  },
+  "repository": "https://github.com/yjtec/js-sku",
+  "scripts": {
+    "dev": "father doc dev",
+    "build": "father build",
+    "watch": "father build --watch"
+  },
+  "peerDependencies": {
+    "react": "16.x"
+  },
+  "devDependencies": {
+    "father": "^2.16.0"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "babel-plugin-import": "^1.12.2"
+  }
+}
