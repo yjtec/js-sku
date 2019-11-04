@@ -1,6 +1,6 @@
 {
   "name": "@yjtec/sku",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "js sku",
   "main": "lib/index.js",
   "files": [

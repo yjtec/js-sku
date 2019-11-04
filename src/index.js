@@ -18,7 +18,7 @@ function calcDescartes (array) {
     });
 }
 
-const formatSku = data => {
+const formatSku = (data,sku) => {
     const result = [];
     data.map(item => {
       if(item.items.length){
@@ -27,6 +27,13 @@ const formatSku = data => {
     })
     return calcDescartes(result)
       .map(item => Array.isArray(item) ? {spec:item.join('*'),attr:item}:{spec:item,attr:[item]})
+      .map(item => {
+        const currentSku = sku.find(s => s.spec === item.spec) || {};
+        return {
+          ...item,
+          ...currentSku
+        }
+      })
 }
 class GoodsSpec extends Component{
   constructor(props) {
@@ -35,6 +42,15 @@ class GoodsSpec extends Component{
       specs:[],
       sku:[]
     }
+  }
+  componentDidMount(){
+    const {value} = this.props;
+    this.setState({
+      ...value,
+      sku:value.sku && value.sku.length > 0 ? value.sku.map(item => ({...item,spec:item.spec.join('*')})) : []
+    },()=>{
+      this.props.onChange(this.state);
+    });
   }
   handleSkuChange = (e,sku) => {
     const key = e.target.name;
@@ -131,11 +147,11 @@ class GoodsSpec extends Component{
     this.setState({specs});
   }
   handleRemoveSpec = uid => {
-    const {specs} = this.state;
+    const {specs,sku} = this.state;
     const newSpecs = specs.filter(item => item.uid !== uid);
     this.setState({
       specs:newSpecs,
-      sku:formatSku(newSpecs)
+      sku:formatSku(newSpecs,sku)
     },()=>{
       this.props.onChange(this.state);
     });
@@ -161,7 +177,7 @@ class GoodsSpec extends Component{
     this.setState({specs:newSpecs});
   }
   handleRemoveItem = (spec,i) => {
-    const {specs} = this.state;
+    const {specs,sku} = this.state;
     const newSpecs = specs.map(item => {
         if(item.uid == spec.uid){
         item.items.splice(i,1);
@@ -170,16 +186,15 @@ class GoodsSpec extends Component{
         return item;
       }      
     })
-    return false;
     this.setState({
       specs:newSpecs,
-      sku:formatSku(newSpecs)
+      sku:formatSku(newSpecs,sku)
     },()=>{
       this.props.onChange(this.state);
     });
   }
   handleItemChange = (e,spec,i) => {
-    const {specs} = this.state;
+    const {specs,sku} = this.state;
     const newSpecs = specs.map(item => {
         if(item.uid == spec.uid){
         item.items[i] = e.target.value;
@@ -190,7 +205,7 @@ class GoodsSpec extends Component{
     })
     this.setState({
       specs:newSpecs,
-      sku:formatSku(newSpecs)
+      sku:formatSku(newSpecs,sku)
     },()=>{
       this.props.onChange(this.state);
     });
@@ -246,6 +261,7 @@ class GoodsSpec extends Component{
       specs,
       sku
     } = this.state;
+
     return(
         <div>
           <Button onClick={this.handleAddSpec} type="circle" icon="plus" />

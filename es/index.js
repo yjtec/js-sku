@@ -17,12 +17,6 @@ import _Icon from "antd/es/icon";
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -38,6 +32,12 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 import React, { Component, Fragment } from 'react';
 import styles from './style.less';
@@ -59,7 +59,7 @@ function calcDescartes(array) {
   });
 }
 
-var formatSku = function formatSku(data) {
+var formatSku = function formatSku(data, sku) {
   var result = [];
   data.map(function (item) {
     if (item.items.length) {
@@ -76,6 +76,11 @@ var formatSku = function formatSku(data) {
       spec: item,
       attr: [item]
     };
+  }).map(function (item) {
+    var currentSku = sku.find(function (s) {
+      return s.spec === item.spec;
+    }) || {};
+    return _objectSpread({}, item, {}, currentSku);
   });
 };
 
@@ -252,14 +257,16 @@ function (_Component) {
     };
 
     _this.handleRemoveSpec = function (uid) {
-      var specs = _this.state.specs;
+      var _this$state = _this.state,
+          specs = _this$state.specs,
+          sku = _this$state.sku;
       var newSpecs = specs.filter(function (item) {
         return item.uid !== uid;
       });
 
       _this.setState({
         specs: newSpecs,
-        sku: formatSku(newSpecs)
+        sku: formatSku(newSpecs, sku)
       }, function () {
         _this.props.onChange(_this.state);
       }); //this.setState({specs:specs.map(item => item.uid !== uid)})
@@ -293,7 +300,9 @@ function (_Component) {
     };
 
     _this.handleRemoveItem = function (spec, i) {
-      var specs = _this.state.specs;
+      var _this$state2 = _this.state,
+          specs = _this$state2.specs,
+          sku = _this$state2.sku;
       var newSpecs = specs.map(function (item) {
         if (item.uid == spec.uid) {
           item.items.splice(i, 1);
@@ -302,18 +311,19 @@ function (_Component) {
           return item;
         }
       });
-      return false;
 
       _this.setState({
         specs: newSpecs,
-        sku: formatSku(newSpecs)
+        sku: formatSku(newSpecs, sku)
       }, function () {
         _this.props.onChange(_this.state);
       });
     };
 
     _this.handleItemChange = function (e, spec, i) {
-      var specs = _this.state.specs;
+      var _this$state3 = _this.state,
+          specs = _this$state3.specs,
+          sku = _this$state3.sku;
       var newSpecs = specs.map(function (item) {
         if (item.uid == spec.uid) {
           item.items[i] = e.target.value;
@@ -325,7 +335,7 @@ function (_Component) {
 
       _this.setState({
         specs: newSpecs,
-        sku: formatSku(newSpecs)
+        sku: formatSku(newSpecs, sku)
       }, function () {
         _this.props.onChange(_this.state);
       });
@@ -409,11 +419,27 @@ function (_Component) {
   }
 
   _createClass(GoodsSpec, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      var value = this.props.value;
+      this.setState(_objectSpread({}, value, {
+        sku: value.sku && value.sku.length > 0 ? value.sku.map(function (item) {
+          return _objectSpread({}, item, {
+            spec: item.spec.join('*')
+          });
+        }) : []
+      }), function () {
+        _this2.props.onChange(_this2.state);
+      });
+    }
+  }, {
     key: "render",
     value: function render() {
-      var _this$state = this.state,
-          specs = _this$state.specs,
-          sku = _this$state.sku;
+      var _this$state4 = this.state,
+          specs = _this$state4.specs,
+          sku = _this$state4.sku;
       return React.createElement("div", null, React.createElement(_Button, {
         onClick: this.handleAddSpec,
         type: "circle",
