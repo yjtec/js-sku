@@ -120,6 +120,8 @@ function (_Component) {
 
       _this.setState({
         sku: sku
+      }, function () {
+        _this.props.onChange(_this.state);
       });
 
       setSelectedKeys([]);
@@ -258,6 +260,8 @@ function (_Component) {
       _this.setState({
         specs: newSpecs,
         sku: formatSku(newSpecs)
+      }, function () {
+        _this.props.onChange(_this.state);
       }); //this.setState({specs:specs.map(item => item.uid !== uid)})
 
     };
@@ -298,12 +302,13 @@ function (_Component) {
           return item;
         }
       });
-      console.log(newSpecs);
       return false;
 
       _this.setState({
         specs: newSpecs,
         sku: formatSku(newSpecs)
+      }, function () {
+        _this.props.onChange(_this.state);
       });
     };
 

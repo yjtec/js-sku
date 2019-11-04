@@ -55,7 +55,9 @@ class GoodsSpec extends Component{
       }
       return {...item,[key]:tmpvalue}
     });
-    this.setState({sku:sku})
+    this.setState({sku:sku},()=>{
+      this.props.onChange(this.state);
+    })
     setSelectedKeys([]);
     confirm();
 
@@ -134,6 +136,8 @@ class GoodsSpec extends Component{
     this.setState({
       specs:newSpecs,
       sku:formatSku(newSpecs)
+    },()=>{
+      this.props.onChange(this.state);
     });
     //this.setState({specs:specs.map(item => item.uid !== uid)})
   }
@@ -166,11 +170,12 @@ class GoodsSpec extends Component{
         return item;
       }      
     })
-    console.log(newSpecs);
     return false;
     this.setState({
       specs:newSpecs,
       sku:formatSku(newSpecs)
+    },()=>{
+      this.props.onChange(this.state);
     });
   }
   handleItemChange = (e,spec,i) => {
